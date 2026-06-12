@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abu Dhabi Budget Planner — The Middle Eastern Dream</title>
+<style>
+  :root {
+    --bg:            #f0ebe1;
+    --surface:       #faf7f2;
+    --surface2:      #ede8de;
+    --border:        #d8d0c2;
+    --border2:       #bfb8a8;
+    --text:          #2e2016;
+    --text2:         #5a4a36;
+    --text3:         #8a7a68;
+    --accent:        #7a9470;
+    --accent-dark:   #5e7657;
+    --accent-light:  #edf1e8;
+    --accent-border: #c0cdb8;
+    --sage:          #8fa882;
+    --sage-dark:     #6b8060;
+    --sage-light:    #f0f3ec;
+    --sand:          #c9b99a;
+    --sand-light:    #f5f0e8;
+    --brown:         #3d2b1f;
+    --brown-light:   #f2ece4;
+    --success:       #5e7657;
+    --success-light: #edf1e8;
+    --danger:        #9e4a35;
+    --danger-light:  #faf0ec;
+    --warning:       #8a6a2a;
+    --warning-light: #faf4e8;
+    --radius:        10px;
+    --radius-lg:     16px;
+    --shadow:        0 1px 4px rgba(62,40,20,0.07), 0 4px 16px rgba(62,40,20,0.05);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── TOPBAR ── */
+  .topbar { background: var(--brown); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 54px; }
+  .topbar-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .topbar-logo { width: 34px; height: 34px; border-radius: 8px; background: var(--sage); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .topbar-logo svg { color: #fff; }
+  .topbar-name { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: -.01em; line-height: 1.2; }
+  .topbar-sub  { font-size: 11px; color: rgba(255,255,255,.45); }
+  .topbar-yt { display: flex; align-items: center; gap: 6px; padding: 7px 14px; background: var(--sage); color: #fff; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; transition: background .2s; }
+  .topbar-yt:hover { background: var(--sage-dark); }
+
+  /* ── HERO ── */
+  .hero { background: linear-gradient(160deg, var(--brown) 0%, #5a3a28 40%, var(--sage-dark) 100%); padding: 3rem 1.5rem 2.5rem; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at 70% 40%, rgba(143,168,130,.18) 0%, transparent 60%), url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E"); }
+  .hero-badge { position:relative; display:inline-flex; align-items:center; gap:6px; background:rgba(143,168,130,.22); border:1px solid rgba(143,168,130,.45); color:#d4e8cc; font-size:11px; font-weight:600; letter-spacing:.06em; padding:5px 14px; border-radius:20px; margin-bottom:1.1rem; }
+  .hero h1 { position:relative; font-size:32px; font-weight:800; color:#faf7f2; letter-spacing:-.03em; margin-bottom:.5rem; line-height:1.15; }
+  .hero h1 span { color: #b8d4a8; }
+  .hero p { position:relative; font-size:15px; color:rgba(250,247,242,.65); max-width:460px; margin:0 auto; line-height:1.65; }
+  .hero-flags { position:relative; margin-top:1.25rem; font-size:22px; letter-spacing:6px; opacity:.75; }
+
+  /* ── LAYOUT ── */
+  .app { max-width: 760px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  /* ── STEPS ── */
+  .steps-nav { display:flex; align-items:center; justify-content:center; margin-bottom:2rem; }
+  .step-dot { display:flex; flex-direction:column; align-items:center; gap:5px; }
+  .step-dot .num { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; border:2px solid var(--border); background:var(--surface); color:var(--text3); transition:all .3s; }
+  .step-dot.active .num { border-color:var(--sage); background:var(--sage); color:#fff; }
+  .step-dot.done   .num { border-color:var(--success); background:var(--success); color:#fff; }
+  .step-dot .label { font-size:11px; color:var(--text3); white-space:nowrap; }
+  .step-dot.active .label, .step-dot.done .label { color:var(--text2); }
+  .step-line { width:60px; height:2px; background:var(--border); margin:0 4px 18px; transition:background .3s; }
+  .step-line.done { background:var(--success); }
+
+  /* ── CARD ── */
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.75rem; margin-bottom:1.25rem; box-shadow:var(--shadow); }
+  .card-title { font-size:16px; font-weight:600; margin-bottom:1.25rem; display:flex; align-items:center; gap:8px; color:var(--text); }
+  .ct-icon { color:var(--sage-dark); }
+
+  /* ── FORM ── */
+  .field { display:flex; flex-direction:column; gap:6px; }
+  .field label { font-size:13px; font-weight:500; color:var(--text2); }
+  .field input, .field select { padding:10px 13px; font-size:14px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); color:var(--text); transition:border-color .2s; outline:none; }
+  .field input:focus, .field select:focus { border-color:var(--sage); }
+  .field input::placeholder { color:var(--text3); }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+
+  /* ── CHILDREN ── */
+  .children-list { display:flex; flex-direction:column; gap:10px; margin-top:.75rem; }
+  .child-row { display:grid; grid-template-columns:80px 1fr 1fr 32px; gap:10px; align-items:end; background:var(--surface2); padding:12px; border-radius:var(--radius); border:1px solid var(--border); }
+  .child-row .field label { font-size:12px; }
+  .btn-icon { width:32px; height:32px; border:1px solid var(--border); background:var(--surface); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text3); transition:all .2s; margin-top:22px; }
+  .btn-icon:hover { border-color:var(--danger); color:var(--danger); background:var(--danger-light); }
+  .btn-add { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; font-size:13px; font-weight:500; border:1px dashed var(--border2); border-radius:var(--radius); background:transparent; color:var(--text2); cursor:pointer; margin-top:.75rem; transition:all .2s; }
+  .btn-add:hover { border-color:var(--sage); color:var(--sage-dark); background:var(--sage-light); }
+
+  /* ── AREA PILLS ── */
+  .pill-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+  .pill { padding:7px 14px; font-size:13px; border:1px solid var(--border); border-radius:20px; cursor:pointer; background:var(--surface); color:var(--text2); transition:all .2s; white-space:nowrap; }
+  .pill:hover { border-color:var(--sage); color:var(--sage-dark); }
+  .pill.selected { background:var(--sage); border-color:var(--sage); color:#fff; }
+
+  /* ── BUTTONS ── */
+  .btn { padding:12px 24px; font-size:14px; font-weight:600; border-radius:var(--radius); cursor:pointer; transition:all .2s; border:none; }
+  .btn-primary { background:var(--sage); color:#fff; }
+  .btn-primary:hover { background:var(--sage-dark); }
+  .btn-primary:disabled { opacity:.5; cursor:default; }
+  .btn-row { display:flex; gap:10px; margin-top:1.5rem; }
+
+  /* ── AI LOADING ── */
+  .ai-loading { text-align:center; padding:3rem 1rem; }
+  .spinner { width:44px; height:44px; border:3px solid var(--border); border-top-color:var(--sage); border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 1.25rem; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .ai-loading h3 { font-size:16px; font-weight:600; margin-bottom:.5rem; }
+  .ai-loading p  { font-size:14px; color:var(--text2); }
+  .ai-steps { list-style:none; text-align:left; display:inline-block; margin-top:1.25rem; }
+  .ai-steps li { font-size:13px; color:var(--text3); padding:4px 0; display:flex; align-items:center; gap:8px; }
+  .ai-steps li.done   { color:var(--success); }
+  .ai-steps li.active { color:var(--sage-dark); font-weight:500; }
+  .ai-steps li::before       { content:'○'; font-size:12px; }
+  .ai-steps li.done::before  { content:'✓'; }
+  .ai-steps li.active::before{ content:'●'; }
+
+  /* ── BUDGET TABLE ── */
+  .cat-list { display:flex; flex-direction:column; gap:8px; }
+  .cat-item { display:grid; grid-template-columns:40px 1fr auto 130px; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); transition:border-color .2s; }
+  .cat-item:hover { border-color:var(--border2); }
+  .cat-icon { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+  .cat-info .name { font-size:14px; font-weight:500; }
+  .cat-info .note { font-size:12px; color:var(--text3); margin-top:2px; }
+  .cat-pct { font-size:13px; color:var(--text3); text-align:right; min-width:40px; }
+  .cat-input-wrap { position:relative; }
+  .cat-input-wrap .currency { position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:11px; color:var(--text3); pointer-events:none; font-weight:500; }
+  .cat-input-wrap input { width:130px; padding:8px 8px 8px 38px; font-size:14px; font-weight:500; border:1px solid var(--border); border-radius:8px; background:var(--surface2); color:var(--text); text-align:right; outline:none; }
+  .cat-input-wrap input:focus { border-color:var(--sage); background:var(--surface); }
+
+  /* ── SUMMARY ── */
+  .summary-row { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:1.25rem; }
+  .metric { background:var(--surface); border-radius:var(--radius); padding:14px 16px; border:1px solid var(--border); box-shadow:var(--shadow); }
+  .metric .mlabel { font-size:12px; color:var(--text3); margin-bottom:5px; }
+  .metric .mval { font-size:20px; font-weight:700; }
+  .mval.pos { color:var(--success); }
+  .mval.neg { color:var(--danger); }
+
+  /* ── STACK BAR ── */
+  .stack-bar { display:flex; height:10px; border-radius:6px; overflow:hidden; gap:2px; margin-bottom:1rem; }
+  .stack-seg { height:100%; border-radius:2px; transition:flex .4s ease; cursor:pointer; }
+
+  /* ── HBARS ── */
+  .hbar-list { display:flex; flex-direction:column; gap:8px; }
+  .hbar-row { display:grid; grid-template-columns:140px 1fr 80px; align-items:center; gap:10px; }
+  .hbar-label { font-size:12px; color:var(--text2); text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .hbar-track { height:7px; background:var(--surface2); border-radius:4px; overflow:hidden; }
+  .hbar-fill  { height:100%; border-radius:4px; transition:width .5s ease; }
+  .hbar-val   { font-size:12px; color:var(--text2); text-align:right; font-variant-numeric:tabular-nums; }
+
+  /* ── INSIGHTS ── */
+  .insight { display:flex; gap:10px; padding:12px 0; border-bottom:1px solid var(--border); font-size:13px; line-height:1.55; color:var(--text2); }
+  .insight:last-child { border-bottom:none; }
+  .insight-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+
+  /* ── AI NOTE ── */
+  .ai-note { display:flex; align-items:flex-start; gap:10px; background:var(--sage-light); border:1px solid var(--accent-border); border-radius:var(--radius); padding:12px 14px; font-size:13px; color:var(--sage-dark); line-height:1.55; margin-bottom:1rem; }
+
+  /* ── CURRENCY CONVERTER ── */
+  .converter-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem; margin-bottom:1.25rem; box-shadow:var(--shadow); }
+  .converter-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; }
+  .converter-title { font-size:16px; font-weight:600; display:flex; align-items:center; gap:8px; color:var(--text); }
+  .rate-badge { font-size:11px; background:var(--sand-light); color:var(--warning); border:1px solid var(--sand); padding:3px 10px; border-radius:20px; font-weight:500; }
+  .conv-grid { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:12px; }
+  .conv-field { display:flex; flex-direction:column; gap:6px; }
+  .conv-field label { font-size:12px; font-weight:500; color:var(--text3); }
+  .conv-input-wrap { position:relative; }
+  .conv-flag { position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:16px; pointer-events:none; }
+  .conv-input-wrap input { width:100%; padding:10px 10px 10px 36px; font-size:15px; font-weight:600; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface2); color:var(--text); outline:none; }
+  .conv-input-wrap input:focus { border-color:var(--sage); background:var(--surface); }
+  .conv-arrow { color:var(--sand); font-size:20px; margin-top:18px; text-align:center; }
+  .conv-result { background:var(--sage-light); border:1px solid var(--accent-border); border-radius:var(--radius); padding:1rem 1.25rem; margin-top:1rem; display:flex; align-items:center; justify-content:space-between; }
+  .conv-result .cr-label { font-size:12px; color:var(--text3); margin-bottom:3px; }
+  .conv-result .cr-value { font-size:22px; font-weight:700; color:var(--sage-dark); }
+  .conv-result .cr-rate  { font-size:12px; color:var(--text3); text-align:right; }
+  .conv-currencies { display:flex; flex-wrap:wrap; gap:6px; margin-top:1rem; }
+  .curr-pill { padding:5px 12px; font-size:12px; border:1px solid var(--border); border-radius:16px; cursor:pointer; background:var(--surface); color:var(--text2); transition:all .2s; display:flex; align-items:center; gap:5px; }
+  .curr-pill:hover { border-color:var(--sage); }
+  .curr-pill.active { background:var(--sage); border-color:var(--sage); color:#fff; font-weight:600; }
+  .rates-note { font-size:11px; color:var(--text3); margin-top:.75rem; text-align:center; }
+
+  /* ── ACTIONS ── */
+  .actions { display:flex; gap:10px; flex-wrap:wrap; }
+  .btn-export { display:inline-flex; align-items:center; gap:7px; padding:11px 22px; font-size:14px; font-weight:600; background:var(--sage); color:#fff; border:none; border-radius:var(--radius); cursor:pointer; transition:background .2s; }
+  .btn-export:hover { background:var(--sage-dark); }
+  .btn-reset { display:inline-flex; align-items:center; gap:7px; padding:11px 22px; font-size:14px; font-weight:500; background:var(--surface); color:var(--text2); border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; transition:background .2s; }
+  .btn-reset:hover { background:var(--surface2); }
+
+  /* ── ERROR ── */
+  .error-box { background:var(--danger-light); border:1px solid #d4a898; border-radius:var(--radius); padding:12px 16px; font-size:13px; color:var(--danger); margin-top:1rem; }
+
+  /* ── FOOTER ── */
+  .footer { background:var(--brown); margin-top:3rem; padding:2rem 1.5rem; text-align:center; }
+  .footer-logo-row { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:.75rem; }
+  .footer-logo { width:32px; height:32px; border-radius:8px; background:var(--sage); display:flex; align-items:center; justify-content:center; }
+  .footer-name { font-size:15px; font-weight:700; color:#faf7f2; }
+  .footer p { font-size:12px; color:rgba(250,247,242,.5); line-height:1.8; }
+  .footer a { color:rgba(184,212,168,.8); text-decoration:none; }
+  .footer a:hover { color:#b8d4a8; text-decoration:underline; }
+
+  /* ── MISC ── */
+  .hidden { display:none !important; }
+  .panel { display:none; }
+  .panel.active { display:block; }
+  .section-label { font-size:11px; font-weight:600; letter-spacing:.07em; color:var(--text3); text-transform:uppercase; margin:1.25rem 0 .6rem; }
+
+  @media (max-width:600px) {
+    .grid2,.grid3 { grid-template-columns:1fr; }
+    .summary-row { grid-template-columns:1fr 1fr; }
+    .child-row { grid-template-columns:1fr 1fr; }
+    .cat-item { grid-template-columns:36px 1fr 110px; }
+    .cat-pct { display:none; }
+    .hbar-row { grid-template-columns:100px 1fr 70px; }
+    .step-line { width:32px; }
+    .conv-grid { grid-template-columns:1fr; }
+    .conv-arrow { margin-top:0; }
+    .topbar-yt span { display:none; }
+    .hero h1 { font-size:24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <a class="topbar-brand" href="https://www.youtube.com/channel/UCQ2WBch8w4dqhk8_NzEyvZQ" target="_blank">
+    <div class="topbar-logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <div>
+      <div class="topbar-name">The Middle Eastern Dream</div>
+      <div class="topbar-sub">Abu Dhabi Expat Channel</div>
+    </div>
+  </a>
+  <a class="topbar-yt" href="https://www.youtube.com/channel/UCQ2WBch8w4dqhk8_NzEyvZQ" target="_blank">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+    <span>Watch the channel</span>
+  </a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    Exclusive tool — The Middle Eastern Dream
+  </div>
+  <h1>Your <span>Abu Dhabi</span> Budget,<br>Personalised by AI</h1>
+  <p>Answer a few questions about your household and let AI calculate a realistic monthly budget based on 2025–2026 Abu Dhabi market data.</p>
+  <div class="hero-flags">🇦🇪 🌍 🏙️</div>
+</div>
+
+<!-- APP -->
+<div class="app">
+
+  <div class="steps-nav">
+    <div class="step-dot active" id="dot-1"><div class="num">1</div><div class="label">Your profile</div></div>
+    <div class="step-line" id="line-1"></div>
+    <div class="step-dot" id="dot-2"><div class="num">2</div><div class="label">Calculating</div></div>
+    <div class="step-line" id="line-2"></div>
+    <div class="step-dot" id="dot-3"><div class="num">3</div><div class="label">Your budget</div></div>
+  </div>
+
+  <!-- ── STEP 1 ── -->
+  <div class="panel active" id="panel-1">
+
+    <div class="card">
+      <div class="card-title">
+        <svg class="ct-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Income &amp; Household
+      </div>
+      <div class="grid2" style="margin-bottom:14px">
+        <div class="field"><label>Monthly salary (AED)</label><input type="number" id="salary" placeholder="e.g. 25000" min="0" step="500"></div>
+        <div class="field"><label>Other monthly income (AED)</label><input type="number" id="other-income" placeholder="0" min="0" step="500" value="0"></div>
+      </div>
+      <div class="grid3">
+        <div class="field"><label>Adults in household</label>
+          <select id="adults"><option value="1">1 adult</option><option value="2" selected>2 adults</option><option value="3">3+ adults</option></select>
+        </div>
+        <div class="field"><label>Do you have a car?</label>
+          <select id="has-car"><option value="yes" selected>Yes, own / lease</option><option value="no">No, public transport</option></select>
+        </div>
+        <div class="field"><label>Domestic helper?</label>
+          <select id="has-helper"><option value="none">None</option><option value="parttime">Part-time</option><option value="livein">Live-in</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg class="ct-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Children <span style="font-weight:400;color:var(--text3)">(optional)</span>
+      </div>
+      <div id="children-list" class="children-list"></div>
+      <button class="btn-add" onclick="addChild()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add a child
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg class="ct-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Preferred area <span style="font-weight:400;color:var(--text3)">(optional)</span>
+      </div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:.75rem">Select your preferred neighbourhood or leave blank for a city-wide average.</p>
+      <div class="pill-group" id="area-pills">
+        <div class="pill" data-area="">No preference</div>
+        <div class="pill" data-area="Al Reem Island">Al Reem Island</div>
+        <div class="pill" data-area="Saadiyat Island">Saadiyat Island</div>
+        <div class="pill" data-area="Yas Island">Yas Island</div>
+        <div class="pill" data-area="Al Raha Beach">Al Raha Beach</div>
+        <div class="pill" data-area="Khalifa City">Khalifa City</div>
+        <div class="pill" data-area="MBZ City">MBZ City</div>
+        <div class="pill" data-area="Al Reef">Al Reef</div>
+        <div class="pill" data-area="Corniche / Downtown">Corniche / Downtown</div>
+      </div>
+    </div>
+
+    <div id="step1-error" class="error-box hidden">Please enter your monthly salary to continue.</div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goToStep2()">Calculate my budget →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2 ── -->
+  <div class="panel" id="panel-2">
+    <div class="card">
+      <div class="ai-loading">
+        <div class="spinner"></div>
+        <h3>Building your personalised budget…</h3>
+        <p>Analysing your profile and matching it against current Abu Dhabi market data.</p>
+        <ul class="ai-steps" id="ai-steps-list">
+          <li id="ais-1">Evaluating household size &amp; housing needs</li>
+          <li id="ais-2">Matching school fees by curriculum &amp; grade</li>
+          <li id="ais-3">Calculating transport &amp; lifestyle costs</li>
+          <li id="ais-4">Applying area-specific adjustments</li>
+          <li id="ais-5">Generating personalised insights</li>
+        </ul>
+      </div>
+      <div id="ai-error" class="error-box hidden"></div>
+    </div>
+  </div>
+
+  <!-- ── STEP 3 ── -->
+  <div class="panel" id="panel-3">
+
+    <div class="ai-note">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="ai-summary-text">Loading…</span>
+    </div>
+
+    <div class="summary-row">
+      <div class="metric"><div class="mlabel">Total income</div><div class="mval" id="s-income">—</div></div>
+      <div class="metric"><div class="mlabel">Total expenses</div><div class="mval" id="s-expenses">—</div></div>
+      <div class="metric"><div class="mlabel">Monthly balance</div><div class="mval" id="s-balance">—</div></div>
+    </div>
+
+    <div class="stack-bar" id="stack-bar"></div>
+
+    <div class="card" style="padding-bottom:1.25rem">
+      <div class="card-title">
+        <svg class="ct-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Monthly expenses — edit any line
+      </div>
+      <div class="cat-list" id="cat-list"></div>
+    </div>
+
+    <!-- CURRENCY CONVERTER -->
+    <div class="converter-card">
+      <div class="converter-header">
+        <div class="converter-title">💱 Currency Converter</div>
+        <span class="rate-badge" id="rate-updated">Rates loading…</span>
+      </div>
+      <div class="conv-currencies" id="curr-pills"></div>
+      <div class="conv-grid" style="margin-top:1rem">
+        <div class="conv-field">
+          <label>Amount in AED</label>
+          <div class="conv-input-wrap">
+            <span class="conv-flag">🇦🇪</span>
+            <input type="number" id="conv-aed" value="10000" min="0" step="100" oninput="convertFromAED()">
+          </div>
+        </div>
+        <div class="conv-arrow">⇄</div>
+        <div class="conv-field">
+          <label>Amount in selected currency</label>
+          <div class="conv-input-wrap">
+            <span class="conv-flag" id="conv-flag">🇪🇺</span>
+            <input type="number" id="conv-foreign" min="0" step="1" oninput="convertToAED()">
+          </div>
+        </div>
+      </div>
+      <div class="conv-result">
+        <div><div class="cr-label">Converted amount</div><div class="cr-value" id="conv-result-val">—</div></div>
+        <div><div class="cr-rate" id="conv-rate-info">—</div></div>
+      </div>
+      <div style="margin-top:1.25rem">
+        <div style="font-size:13px;font-weight:500;color:var(--text2);margin-bottom:.5rem">Your budget in selected currency</div>
+        <div id="budget-conv-list" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+      <p class="rates-note" id="rates-source-note">Exchange rates fetched live. Indicative rates used if offline.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg class="ct-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Spending breakdown
+      </div>
+      <div class="hbar-list" id="hbar-list"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg class="ct-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Personalised insights
+      </div>
+      <div id="insights-list"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-export" onclick="exportBudget()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export budget
+      </button>
+      <button class="btn-reset" onclick="goToStep1()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        Start over
+      </button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-logo-row">
+    <div class="footer-logo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <div class="footer-name">The Middle Eastern Dream</div>
+  </div>
+  <p>
+    Made with ❤️ for expats in Abu Dhabi &amp; the UAE 🇦🇪<br>
+    Estimates based on 2025–2026 market data · For planning purposes only<br>
+    <a href="https://www.youtube.com/channel/UCQ2WBch8w4dqhk8_NzEyvZQ" target="_blank">Watch the channel on YouTube →</a>
+  </p>
+</div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let childCount = 0, selectedArea = '', budgetData = {}, profileData = {};
+let exchangeRates = {}, selectedCurrency = 'EUR';
+
+// ── CURRENCIES ────────────────────────────────────────────────────────────────
+const currencies = [
+  { code:'EUR', flag:'🇪🇺', fallback:0.2497 },
+  { code:'GBP', flag:'🇬🇧', fallback:0.2104 },
+  { code:'USD', flag:'🇺🇸', fallback:0.2723 },
+  { code:'CHF', flag:'🇨🇭', fallback:0.2382 },
+  { code:'CAD', flag:'🇨🇦', fallback:0.3761 },
+  { code:'AUD', flag:'🇦🇺', fallback:0.4216 },
+  { code:'INR', flag:'🇮🇳', fallback:22.87  },
+  { code:'PHP', flag:'🇵🇭', fallback:15.54  },
+  { code:'SAR', flag:'🇸🇦', fallback:1.021  },
+  { code:'EGP', flag:'🇪🇬', fallback:13.41  },
+  { code:'LBP', flag:'🇱🇧', fallback:243.8  },
+  { code:'MAD', flag:'🇲🇦', fallback:2.711  },
+];
+const getCurr = c => currencies.find(x => x.code === c) || currencies[0];
+const getRate = c => exchangeRates[c] || getCurr(c).fallback;
+
+async function fetchRates() {
+  try {
+    const r = await fetch('https://api.exchangerate-api.com/v4/latest/AED');
+    if (!r.ok) throw 0;
+    const d = await r.json();
+    currencies.forEach(c => { if (d.rates[c.code]) exchangeRates[c.code] = d.rates[c.code]; });
+    const dt = new Date(d.date);
+    document.getElementById('rate-updated').textContent = 'Rates: ' + dt.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    document.getElementById('rates-source-note').textContent = 'Live rates via ExchangeRate-API · 1 AED = ' + getRate(selectedCurrency).toFixed(4) + ' ' + selectedCurrency;
+  } catch {
+    document.getElementById('rate-updated').textContent = 'Indicative rates';
+  }
+  buildCurrencyPills(); convertFromAED();
+}
+
+function buildCurrencyPills() {
+  const wrap = document.getElementById('curr-pills'); wrap.innerHTML = '';
+  currencies.forEach(c => {
+    const p = document.createElement('div');
+    p.className = 'curr-pill' + (c.code === selectedCurrency ? ' active' : '');
+    p.textContent = c.flag + ' ' + c.code;
+    p.onclick = () => selectCurrency(c.code);
+    wrap.appendChild(p);
+  });
+}
+
+function selectCurrency(code) {
+  selectedCurrency = code;
+  document.querySelectorAll('.curr-pill').forEach(p => p.classList.toggle('active', p.textContent.includes(code)));
+  document.getElementById('conv-flag').textContent = getCurr(code).flag;
+  document.getElementById('rates-source-note').textContent = '1 AED = ' + getRate(code).toFixed(4) + ' ' + code;
+  convertFromAED(); updateBudgetConversion();
+}
+
+function convertFromAED() {
+  const aed = parseFloat(document.getElementById('conv-aed').value) || 0;
+  const res = aed * getRate(selectedCurrency);
+  const c = getCurr(selectedCurrency);
+  document.getElementById('conv-foreign').value = res.toFixed(2);
+  document.getElementById('conv-result-val').textContent = c.flag + ' ' + res.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' ' + selectedCurrency;
+  document.getElementById('conv-rate-info').textContent = '1 AED = ' + getRate(selectedCurrency).toFixed(4) + ' ' + selectedCurrency;
+}
+
+function convertToAED() {
+  const f = parseFloat(document.getElementById('conv-foreign').value) || 0;
+  const aed = f / getRate(selectedCurrency);
+  document.getElementById('conv-aed').value = Math.round(aed);
+  document.getElementById('conv-result-val').textContent = '🇦🇪 ' + Math.round(aed).toLocaleString() + ' AED';
+  document.getElementById('conv-rate-info').textContent = '1 ' + selectedCurrency + ' = ' + (1/getRate(selectedCurrency)).toFixed(4) + ' AED';
+}
+
+function updateBudgetConversion() {
+  const list = document.getElementById('budget-conv-list'); list.innerHTML = '';
+  if (!profileData.salary) return;
+  const vals = getValues();
+  const income = (profileData.salary||0) + (profileData.otherIncome||0);
+  const totalExp = Object.values(vals).reduce((s,v)=>s+v,0);
+  const balance = income - totalExp;
+  const rate = getRate(selectedCurrency);
+  const c = getCurr(selectedCurrency);
+  [{ label:'Monthly income', aed:income }, { label:'Total expenses', aed:totalExp }, { label:'Balance', aed:balance }].forEach(r => {
+    const conv = r.aed * rate;
+    const d = document.createElement('div');
+    d.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)';
+    const color = r.label==='Balance' ? (r.aed>=0?'var(--success)':'var(--danger)') : 'var(--text)';
+    d.innerHTML = `<span style="color:var(--text2)">${r.label}</span><span style="text-align:right">AED ${Math.round(r.aed).toLocaleString()}</span><span style="text-align:right;font-weight:600;color:${color}">${c.flag} ${Math.round(conv).toLocaleString()} ${selectedCurrency}</span>`;
+    list.appendChild(d);
+  });
+}
+
+// ── AREA PILLS ────────────────────────────────────────────────────────────────
+document.querySelectorAll('.pill').forEach(p => p.addEventListener('click', () => {
+  document.querySelectorAll('.pill').forEach(x => x.classList.remove('selected'));
+  p.classList.add('selected'); selectedArea = p.dataset.area;
+}));
+document.querySelector('.pill[data-area=""]').classList.add('selected');
+
+// ── CHILDREN ─────────────────────────────────────────────────────────────────
+const curricula = ['British (IGCSE/A-Level)','American (AP/SAT)','IB (International Baccalaureate)','French (Lycée)','Indian (CBSE/ICSE)','Bilingual (Arabic/English)'];
+
+function addChild() {
+  childCount++;
+  const list = document.getElementById('children-list');
+  const row = document.createElement('div');
+  row.className = 'child-row'; row.id = 'child-' + childCount;
+  row.innerHTML = `
+    <div class="field"><label>Age</label><input type="number" id="child-age-${childCount}" min="2" max="18" placeholder="e.g. 8" style="width:100%"></div>
+    <div class="field"><label>Curriculum</label><select id="child-curr-${childCount}" style="width:100%">${curricula.map(c=>`<option>${c}</option>`).join('')}</select></div>
+    <div class="field"><label>School tier</label><select id="child-tier-${childCount}" style="width:100%"><option value="budget">Budget</option><option value="mid" selected>Mid-range</option><option value="premium">Premium</option></select></div>
+    <button class="btn-icon" onclick="removeChild(${childCount})" title="Remove">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>`;
+  list.appendChild(row);
+}
+
+function removeChild(id) { const el = document.getElementById('child-'+id); if(el) el.remove(); }
+
+function getChildren() {
+  return Array.from(document.getElementById('children-list').querySelectorAll('.child-row')).map(row => {
+    const id = row.id.replace('child-','');
+    return { age: parseInt(document.getElementById('child-age-'+id)?.value)||8, curriculum: document.getElementById('child-curr-'+id)?.value||'British (IGCSE/A-Level)', tier: document.getElementById('child-tier-'+id)?.value||'mid' };
+  });
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    document.getElementById('panel-'+i).classList.toggle('active', i===n);
+    const dot = document.getElementById('dot-'+i);
+    dot.classList.toggle('active', i===n); dot.classList.toggle('done', i<n);
+  });
+  [1,2].forEach(i => document.getElementById('line-'+i)?.classList.toggle('done', i<n));
+  window.scrollTo(0,0);
+}
+
+function goToStep1() { setStep(1); }
+
+async function goToStep2() {
+  const salary = parseFloat(document.getElementById('salary').value);
+  if (!salary || salary <= 0) { document.getElementById('step1-error').classList.remove('hidden'); return; }
+  document.getElementById('step1-error').classList.add('hidden');
+  profileData = { salary, otherIncome: parseFloat(document.getElementById('other-income').value)||0, adults: parseInt(document.getElementById('adults').value), hasCar: document.getElementById('has-car').value==='yes', helperType: document.getElementById('has-helper').value, area: selectedArea, children: getChildren() };
+  setStep(2); animateAISteps(); await callClaudeAPI();
+}
+
+function animateAISteps() {
+  const steps = document.querySelectorAll('#ai-steps-list li');
+  steps.forEach(s => { s.className=''; });
+  let i=0;
+  const iv = setInterval(() => { if(i>0) steps[i-1].classList.add('done'); if(i<steps.length){steps[i].classList.add('active');i++;}else clearInterval(iv); }, 900);
+}
+
+// ── CLAUDE API ────────────────────────────────────────────────────────────────
+async function callClaudeAPI() {
+  const p = profileData;
+  const childStr = p.children.length===0 ? 'No children.' : p.children.map((c,i)=>`Child ${i+1}: age ${c.age}, ${c.curriculum} curriculum, ${c.tier} tier school`).join('; ');
+  const prompt = `You are an expert financial advisor specialising in UAE expat budgets. Generate a realistic monthly budget for Abu Dhabi in AED for 2025-2026.
+
+PROFILE:
+- Monthly salary: AED ${p.salary}
+- Other income: AED ${p.otherIncome}
+- Adults: ${p.adults}
+- Children: ${childStr}
+- Has car: ${p.hasCar}
+- Domestic helper: ${p.helperType}
+- Preferred area: ${p.area||'No preference (city-wide average)'}
+
+MARKET DATA:
+RENT (monthly AED): Studio: Khalifa/MBZ 2,200-3,000|Reem/TCA/Corniche 3,500-5,500|Saadiyat/Yas/Raha 5,500-8,000. 1BR: 2,800-4,000|5,000-8,000|7,500-12,000. 2BR: 4,500-7,000|7,500-13,000|12,000-20,000. 3BR: 6,000-9,000|10,000-18,000|17,000-28,000. Al Reef ~15% below Khalifa. Rule: 1 adult=studio/1BR, couple=1-2BR, 3-4 people=2-3BR, 5+=3BR+.
+SCHOOL (annual÷10 + AED 450/mo transport): British budget 20-35k|mid 40-65k|premium 70-95k. American 25-40k|40-70k|65-90k. IB 35-55k|55-80k|80-110k. French 30-55k. CBSE 10-20k|20-35k. Bilingual 22-45k.
+GROCERIES/month: 1 adult 1,500-2,200|2 adults 2,500-3,800|3-4 people 3,500-5,500. +400 per extra child. +20-30% premium islands.
+TRANSPORT: own car 1,800-3,500|no car 800-1,500.
+UTILITIES (DEWA+internet 300+mobile 150): 1BR 900-1,400|2BR 1,200-1,800|3BR+ 1,600-2,500.
+DOMESTIC: none=0|part-time 1,200-1,800|live-in 2,500-4,000.
+HEALTHCARE top-up: single 200-500|couple 400-900|family 600-1,500.
+LEISURE: single 800-2,000|couple 1,800-3,000|family 2,500-4,500.
+SAVINGS: target 15-20% of income.
+
+Respond ONLY with valid JSON (no markdown):
+{"summary":"<40-60 word situation summary>","rent":<n>,"rent_note":"<note>","school":<n>,"school_note":"<note>","groceries":<n>,"groceries_note":"<note>","transport":<n>,"transport_note":"<note>","utilities":<n>,"utilities_note":"<note>","domestic":<n>,"domestic_note":"<note>","healthcare":<n>,"healthcare_note":"<note>","leisure":<n>,"leisure_note":"<note>","savings":<n>,"savings_note":"<note>","insights":["<insight 1>","<insight 2>","<insight 3>"]}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:prompt}] })
+    });
+    if (!res.ok) { const e=await res.json(); throw new Error(e.error?.message||'API error '+res.status); }
+    const data = await res.json();
+    const raw = data.content.map(b=>b.text||'').join('').trim().replace(/```json|```/g,'').trim();
+    budgetData = JSON.parse(raw);
+    setTimeout(()=>{ renderBudget(); fetchRates(); }, 400);
+  } catch(err) {
+    document.getElementById('ai-error').textContent = 'Error: '+err.message+'. Make sure this file is hosted on a web server (e.g. Netlify), not opened directly from your desktop.';
+    document.getElementById('ai-error').classList.remove('hidden');
+    document.querySelector('.spinner').style.display='none';
+  }
+}
+
+// ── CATEGORIES ────────────────────────────────────────────────────────────────
+const cats = [
+  {id:'rent',       icon:'🏠', label:'Housing / Rent',        color:'#7a9470', bg:'#edf1e8'},
+  {id:'school',     icon:'🎓', label:'School fees',           color:'#5e7657', bg:'#e8ede5'},
+  {id:'groceries',  icon:'🛒', label:'Groceries & dining',    color:'#9e7a3a', bg:'#f5f0e0'},
+  {id:'transport',  icon:'🚗', label:'Car & transport',       color:'#6a7a5e', bg:'#eaede5'},
+  {id:'utilities',  icon:'⚡', label:'Utilities & bills',     color:'#4a7a8a', bg:'#e5edf0'},
+  {id:'domestic',   icon:'🧹', label:'Domestic help',         color:'#7a6a5a', bg:'#f0ece5'},
+  {id:'healthcare', icon:'🏥', label:'Healthcare',            color:'#9e5a3a', bg:'#f5ece5'},
+  {id:'leisure',    icon:'🌴', label:'Leisure & lifestyle',   color:'#4a8a7a', bg:'#e5f0ee'},
+  {id:'savings',    icon:'💰', label:'Savings & investments', color:'#3d6b5a', bg:'#e5ede9'},
+];
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderBudget() {
+  setStep(3);
+  const catList = document.getElementById('cat-list'); catList.innerHTML='';
+  cats.forEach(c => {
+    const val = budgetData[c.id]||0, note = budgetData[c.id+'_note']||'';
+    if (c.id==='school' && profileData.children.length===0) return;
+    const item = document.createElement('div');
+    item.className='cat-item'; item.dataset.id=c.id;
+    item.innerHTML=`<div class="cat-icon" style="background:${c.bg}">${c.icon}</div><div class="cat-info"><div class="name">${c.label}</div><div class="note">${note}</div></div><div class="cat-pct" id="pct-${c.id}">—</div><div class="cat-input-wrap"><span class="currency">AED</span><input type="number" id="val-${c.id}" value="${val}" min="0" step="100" oninput="recalc()"></div>`;
+    catList.appendChild(item);
+  });
+  document.getElementById('ai-summary-text').textContent = budgetData.summary||'';
+  recalc();
+}
+
+function getValues() {
+  const v={};
+  cats.forEach(c=>{const el=document.getElementById('val-'+c.id); v[c.id]=el?(parseFloat(el.value)||0):0;});
+  return v;
+}
+
+function fmt(n) { return 'AED '+Math.round(n).toLocaleString(); }
+function fmtN(n){ return Math.round(n).toLocaleString(); }
+
+function recalc() {
+  const income=(profileData.salary||0)+(profileData.otherIncome||0);
+  const vals=getValues(), totalExp=Object.values(vals).reduce((s,v)=>s+v,0), balance=income-totalExp;
+  document.getElementById('s-income').textContent=fmt(income);
+  document.getElementById('s-expenses').textContent=fmt(totalExp);
+  const bEl=document.getElementById('s-balance'); bEl.textContent=fmt(balance); bEl.className='mval '+(balance>=0?'pos':'neg');
+  cats.forEach(c=>{const el=document.getElementById('pct-'+c.id); if(el&&income>0) el.textContent=Math.round(vals[c.id]/income*100)+'%';});
+
+  const bar=document.getElementById('stack-bar'); bar.innerHTML='';
+  cats.filter(c=>vals[c.id]>0).forEach(c=>{
+    const s=document.createElement('div'); s.className='stack-seg'; s.style.flex=vals[c.id]; s.style.background=c.color; s.title=c.label+': '+fmt(vals[c.id]); bar.appendChild(s);
+  });
+  if(balance>0){const s=document.createElement('div');s.className='stack-seg';s.style.flex=balance;s.style.background='var(--border)';s.title='Unallocated: '+fmt(balance);bar.appendChild(s);}
+
+  const hbar=document.getElementById('hbar-list'); hbar.innerHTML='';
+  const maxV=Math.max(...Object.values(vals),1);
+  cats.filter(c=>vals[c.id]>0).sort((a,b)=>vals[b.id]-vals[a.id]).forEach(c=>{
+    const row=document.createElement('div'); row.className='hbar-row';
+    row.innerHTML=`<div class="hbar-label">${c.label}</div><div class="hbar-track"><div class="hbar-fill" style="width:${Math.round(vals[c.id]/maxV*100)}%;background:${c.color}"></div></div><div class="hbar-val">${fmtN(vals[c.id])}</div>`;
+    hbar.appendChild(row);
+  });
+
+  buildInsights(income,totalExp,balance,vals);
+  updateBudgetConversion();
+}
+
+function buildInsights(income,totalExp,balance,vals) {
+  const list=document.getElementById('insights-list'); list.innerHTML='';
+  const ins=[];
+  if(budgetData.insights) budgetData.insights.forEach(t=>ins.push({icon:'💡',text:t}));
+  if(income>0&&vals.rent/income>0.35) ins.push({icon:'⚠️',text:`Housing is ${Math.round(vals.rent/income*100)}% of your income. The UAE guideline is under 30–35%. Khalifa City or Al Reef can save AED 2,000–5,000/month vs island communities.`});
+  if(income>0&&vals.savings/income<0.10) ins.push({icon:'⚠️',text:`You're saving ${Math.round(vals.savings/income*100)}% of income. With no UAE state pension for expats, most advisors recommend 15–20% minimum.`});
+  if(balance<0) ins.push({icon:'🔴',text:`Expenses exceed income by AED ${Math.round(Math.abs(balance)).toLocaleString()}. Review housing, school tier, or dining — these typically offer the most room to adjust.`});
+  else if(balance>0&&income>0) ins.push({icon:'✅',text:`AED ${Math.round(balance).toLocaleString()} unallocated each month (${Math.round(balance/income*100)}% of income). Consider splitting between an emergency fund (3 months expenses) and investments.`});
+  ins.slice(0,5).forEach(i=>{const d=document.createElement('div');d.className='insight';d.innerHTML=`<span class="insight-icon">${i.icon}</span><span>${i.text}</span>`;list.appendChild(d);});
+}
+
+// ── EXPORT ────────────────────────────────────────────────────────────────────
+function exportBudget() {
+  const p=profileData, vals=getValues();
+  const income=(p.salary||0)+(p.otherIncome||0), totalExp=Object.values(vals).reduce((s,v)=>s+v,0), balance=income-totalExp;
+  const rate=getRate(selectedCurrency), c=getCurr(selectedCurrency);
+  let txt=`THE MIDDLE EASTERN DREAM — ABU DHABI BUDGET PLANNER\nyoutube.com/channel/UCQ2WBch8w4dqhk8_NzEyvZQ\n${'='.repeat(52)}\n\n`;
+  txt+=`Profile: ${p.adults} adult(s)${p.children.length>0?`, ${p.children.length} child(ren)`:''}${p.area?` | Area: ${p.area}`:''}\n\n`;
+  txt+=`INCOME\n${'-'.repeat(52)}\n`;
+  txt+=`Salary                         AED ${Math.round(p.salary).toLocaleString().padStart(8)}\n`;
+  if(p.otherIncome>0) txt+=`Other income                   AED ${Math.round(p.otherIncome).toLocaleString().padStart(8)}\n`;
+  txt+=`Total income                   AED ${Math.round(income).toLocaleString().padStart(8)}\n\n`;
+  txt+=`EXPENSES                       AED       %    ${c.flag} ${selectedCurrency}\n${'-'.repeat(52)}\n`;
+  cats.forEach(cat=>{
+    const v=vals[cat.id]; if(!v) return;
+    const pct=income>0?Math.round(v/income*100):0;
+    txt+=`${cat.label.padEnd(26)} ${Math.round(v).toLocaleString().padStart(8)}  ${String(pct+'%').padStart(4)}  ${Math.round(v*rate).toLocaleString().padStart(8)}\n`;
+  });
+  txt+=`${'-'.repeat(52)}\nTotal expenses                 ${Math.round(totalExp).toLocaleString().padStart(8)}        ${Math.round(totalExp*rate).toLocaleString().padStart(8)}\n`;
+  txt+=`Balance                        ${Math.round(balance).toLocaleString().padStart(8)}        ${Math.round(balance*rate).toLocaleString().padStart(8)}\n\n`;
+  txt+=`Exchange rate: 1 AED = ${rate.toFixed(4)} ${selectedCurrency}\nGenerated: ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}\nFor planning purposes only.`;
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'})); a.download='abu-dhabi-budget-the-middle-eastern-dream.txt'; a.click();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+buildCurrencyPills();
+</script>
+</body>
+</html>
